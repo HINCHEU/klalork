@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <title>Klac Klork</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:ital,wght@0,100..700;1,100..700&display=swap');
+
+        body {
+            font-family: "Kantumruy Pro", sans-serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+        }
+
+        h2 {
+            font-size: 50px;
+            font-weight: bold;
+        }
+
+        h3 {
+            font-size: 30px;
+            font-weight: 700px;
+        }
+
+        .darkened {
+            background-color: rgba(0, 0, 0, 0.5) !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="h-screen w-screen flex justify-center items-center">
+            <div class="bg-white rounded-lg shadow-md p-4 w-70 h-70 overflow-hidden">
+                <h2 class="text-center">ខ្លារឃ្លោក</h2>
+
+                <div class="grid grid-cols-3 gap-4" id="bet_gride">
+                    <!-- Row 1 -->
+                    <div class="bg-gray-100 p-4 rounded-lg flex flex-col items-center" ref="bet_1">
+                        <p class="text-center mb-2">{{ bet_1 }}</p>
+                        <img src="image/1.jpg" alt="" @click="func_bet_1()" class="w-full">
+                    </div>
+
+                    <div class="bg-gray-100 p-4 rounded-lg flex flex-col items-center" ref="bet_2">
+                        <p class="text-center mb-2">{{ bet_2 }}</p>
+                        <img src="image/2.jpg" alt="" @click="func_bet_2()" class="w-full">
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded-lg flex flex-col items-center" ref="bet_3">
+                        <p class="text-center mb-2">{{ bet_3 }}</p>
+                        <img src="image/3.jpg" alt="" @click="func_bet_3()" class="w-full">
+                    </div>
+
+                    <!-- Row 2 -->
+                    <div class="bg-gray-100 p-4 rounded-lg flex flex-col items-center" ref="bet_4">
+                        <p class="text-center mb-2">{{ bet_4 }}</p>
+                        <img src="image/4.jpg" alt="" @click="func_bet_4()" class="w-full">
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded-lg flex flex-col items-center" ref="bet_5">
+                        <p class="text-center mb-2">{{ bet_5 }}</p>
+                        <img src="image/5.jpg" alt="" @click="func_bet_5()" class="w-full">
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded-lg flex flex-col items-center" ref="bet_6">
+                        <p class="text-center mb-2">{{ bet_6 }}</p>
+                        <img src="image/6.jpg" alt="" @click="func_bet_6()" class="w-full">
+                    </div>
+
+                </div>
+                <div class="mt-3 mb-3 flex justify-center items-center">
+                    <button class="bg-gray-300 hover:bg-gray-400 text-gray-800  py-2 px-4 
+                        rounded inline-flex items-center bg-yellow-500 rounded-full" @click="bet()" id="bet_btn"
+                        :disabled="betPlaced">
+                        <span class="text-white">{{start_word}}</span>
+                    </button>
+                    <button class="bg-gray-300 hover:bg-gray-400 text-gray-00  py-2 
+                        px-4 rounded inline-flex items-center ml-2 bg-red-700 rounded-full " @click="clear_bet()">
+                        <span class="text-white">ចាក់ម្ដងទៀត</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4" id="bet_result">
+                    <div class="bg-gray-100 p-4 rounded-lg" id="win_1">
+                        <img src="image/1.jpg" alt="" id="result_1">
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded-lg" id="win_2">
+                        <img src="image/1.jpg" alt="" id="result_2">
+                    </div>
+                    <div class="bg-gray-100 p-4 rounded-lg" id="win_3">
+                        <img src="image/1.jpg" alt="" id="result_3">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button data-modal-target="popup-modal" data-modal-toggle="popup-modal"
+        class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        type="button">
+        Toggle modal
+    </button>
+
+
+
+
+</body>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script>
+    const { createApp } = Vue;
+    var audio = new Audio('audio/music.m4a');
+    let isAudioPlaying = false;
+    let image = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg'];
+    let bet = false
+    let intervalId = null
+    let randoming = false
+
+    createApp({
+        data() {
+            return {
+                bet_1: 0,
+                bet_2: 0,
+                bet_3: 0,
+                bet_4: 0,
+                bet_5: 0,
+                bet_6: 0,
+                start_word: 'ចាក់',
+                darkenedElements: [],
+                resultImages: [],
+                betPlaced: false // Add this flag to track if a bet is placed
+            }
+        },
+        methods: {
+            func_bet_1() { this.bet_1 += 1; },
+            func_bet_2() { this.bet_2 += 1; },
+            func_bet_3() { this.bet_3 += 1; },
+            func_bet_4() { this.bet_4 += 1; },
+            func_bet_5() { this.bet_5 += 1; },
+            func_bet_6() { this.bet_6 += 1; },
+
+            clear_bet() {
+                this.bet_1 = this.bet_2 = this.bet_3 = this.bet_4 = this.bet_5 = this.bet_6 = 0;
+                this.betPlaced = false;
+                Object.keys(this.$refs).forEach(ref => {
+                    this.$refs[ref].classList.remove('darkened');
+                });
+                clearInterval(intervalId);
+                intervalId = null;
+                [1, 2, 3].forEach(i => {
+                    let winElement = document.getElementById(`win_${i}`);
+                    winElement.querySelector('img').src = 'image/1.jpg'; // or another default image
+                });
+                this.resultImages = [];
+                this.start_word = 'ចាក់';
+                bet = false;
+            }
+            ,
+            chooseResultImages() {
+                let resultIndices = [];
+                while (resultIndices.length < 3) {
+                    let rand = Math.floor(Math.random() * 6);
+                    if (!resultIndices.includes(rand)) resultIndices.push(rand);
+                }
+                this.resultImages = resultIndices.map(index => image[index]);
+                this.updateResultImages();
+
+                intervalId = setInterval(() => {
+                    this.updateResultImages();
+                    this.randomizeBetGridDarkening(); // Randomly darken bet_grid cells during randomization
+                }, 400);
+            },
+            updateResultImages() {
+                this.resultImages.forEach((img, i) => {
+                    let winElement = document.getElementById(`win_${i + 1}`);
+                    let randImgIndex = Math.floor(Math.random() * 6);
+                    let randomImage = image[randImgIndex];
+                    winElement.querySelector('img').src = `image/${randomImage}`;
+                });
+            },
+            randomizeBetGridDarkening() {
+                Object.keys(this.$refs).forEach(ref => {
+                    let betElement = this.$refs[ref];
+                    let betValue = this[`bet_${ref.split('_')[1]}`];
+                    if (betValue > 0) {
+                        betElement.classList.toggle('darkened', Math.random() > 0.5);
+                    }
+                });
+            },
+
+            bet() {
+                if (bet) {
+                    this.start_word = 'បានចាក់';
+                    clearInterval(intervalId);
+                    audio.pause();
+                    isAudioPlaying = false;
+                    this.finalizeResults();
+                    this.betPlaced = true;
+                } else {
+                    this.start_word = 'ចាក់ហើយដកដៃ';
+                    audio.play();
+                    bet = true;
+                    this.chooseResultImages();
+                }
+            },
+
+            finalizeResults() {
+                Object.keys(this.$refs).forEach(ref => {
+                    let betElement = this.$refs[ref];
+                    let betValue = this[`bet_${ref.split('_')[1]}`];
+                    betElement.classList.remove('darkened');
+                    if (betValue > 0) {
+                        this.resultImages.forEach((img, i) => {
+                            let winElement = document.getElementById(`win_${i + 1}`);
+                            let srcImage = winElement.querySelector('img').src.split('/').pop();
+                            if (betElement.querySelector('img').src.includes(srcImage)) {
+                                betElement.classList.add('darkened');
+                            }
+                        });
+                    }
+                });
+            },
+        }
+
+    }).mount('#app');
+</script>
+
+</html>
