@@ -37,7 +37,7 @@
             <div class="bg-white rounded-lg shadow-md p-4 w-70 h-70 overflow-hidden">
                 <h2 class="text-center">ខ្លាឃ្លោក</h2>
 
-                <div class="grid grid-cols-3 gap-4" id="bet_gride">
+                <div class="grid grid-cols-3 gap-4" id="bet_gride" disabled="">
                     <!-- Row 1 -->
                     <div class="bg-gray-100 p-4 rounded-lg flex flex-col items-center" ref="bet_1"
                         @click="incrementBet(1)">
@@ -126,11 +126,13 @@
                     start_word: 'ចាក់',
                     darkenedElements: [],
                     resultImages: [],
+                    isDisable: true,
                     betPlaced: false // Add this flag to track if a bet is placed
                 };
             },
             methods: {
                 incrementBet(betNumber) {
+                    if (bet) return;
                     this[`bet_${betNumber}`] += 1;
                     click.pause();  // Pause the current audio
                     click.currentTime = 0;  // Reset the audio to the beginning
