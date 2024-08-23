@@ -37,7 +37,7 @@
             <div class="bg-white rounded-lg shadow-md p-4 w-70 h-70 overflow-hidden">
                 <h2 class="text-center">ខ្លាឃ្លោក</h2>
 
-                <div class="grid grid-cols-3 gap-4" id="bet_gride" disabled="">
+                <div class="grid grid-cols-3 gap-4" id="bet_gride">
                     <!-- Row 1 -->
                     <div class="bg-gray-100 p-4 rounded-lg flex flex-col items-center" ref="bet_1"
                         @click="incrementBet(1)">
@@ -79,9 +79,8 @@
 
                 <div class="mt-3 mb-3 flex justify-center items-center">
                     <button class="bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 
-                        rounded inline-flex items-center bg-yellow-500 rounded-full" @click="bet()" id="bet_btn"
-                        :disabled="betPlaced">
-                        <span class="text-white">{{start_word}}</span>
+                        rounded inline-flex items-center bg-yellow-500 rounded-full" @click="bet()" id="bet_btn">
+                        <span class="text-white font-">{{start_word}}</span>
                     </button>
                     <button class="bg-gray-300 hover:bg-gray-400 text-gray-00 py-2 
                         px-4 rounded inline-flex items-center ml-2 bg-red-700 rounded-full" @click="clear_bet()">
@@ -126,8 +125,6 @@
                     start_word: 'ចាក់',
                     darkenedElements: [],
                     resultImages: [],
-                    isDisable: true,
-                    betPlaced: false // Add this flag to track if a bet is placed
                 };
             },
             methods: {
@@ -140,7 +137,6 @@
                 },
                 clear_bet() {
                     this.bet_1 = this.bet_2 = this.bet_3 = this.bet_4 = this.bet_5 = this.bet_6 = 0;
-                    this.betPlaced = false;
                     Object.keys(this.$refs).forEach(ref => {
                         this.$refs[ref].classList.remove('darkened');
                     });
@@ -152,6 +148,8 @@
                     });
                     this.resultImages = [];
                     this.start_word = 'ចាក់';
+                    audio.pause()
+                    audio.currentTime = 0
                     bet = false;
                 },
 
@@ -196,7 +194,6 @@
                         audio.pause();
                         isAudioPlaying = false;
                         this.finalizeResults();
-                        this.betPlaced = true;
                     } else {
                         this.start_word = 'ចាក់ហើយដកដៃ';
                         audio.play();
@@ -204,7 +201,6 @@
                         this.chooseResultImages();
                     }
                 },
-
                 finalizeResults() {
                     Object.keys(this.$refs).forEach(ref => {
                         let betElement = this.$refs[ref];
