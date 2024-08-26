@@ -309,54 +309,58 @@
                         }
                     });
                 },
+
                 checkWinOrLoss() {
                     if (this.add_balance) {
                         let totalWon = 0;
                         let totalLost = 0;
+                        let betMoneyBack = 0;
 
                         Object.keys(this.$refs).forEach(ref => {
-                            let betElement = this.$refs[ref];
-                            let betValue = this[`bet_${ref.split('_')[1]}`];
-                            if (betElement.classList.contains('darkened') && betValue > 0) {
-                                totalWon += betValue * 2; // Double the bet amount if won
-                            }
-                            else if (betElement.classList.contains('bg-pink-300') && betValue > 0) {
-                                totalWon += betValue * 3; // double win
-                            }
-                            else if (betElement.classList.contains('bg-red-500') && betValue > 0) {
-                                totalWon += betValue * 4; // triple win
-                            }
-                            else if (betValue > 0) {
-                                totalLost += betValue; // Loss is the bet amount
+                            const betElement = this.$refs[ref];
+                            const betValue = this[`bet_${ref.split('_')[1]}`];
+
+                            if (betValue > 0) {
+                                if (betElement.classList.contains('darkened')) {
+                                    totalWon += betValue; // Double the bet amount if won
+                                    betMoneyBack += betValue; // Return the bet amount
+                                } else if (betElement.classList.contains('bg-pink-300')) {
+                                    totalWon += betValue * 2; // double win
+                                    betMoneyBack += betValue; // Return the bet amount
+                                } else if (betElement.classList.contains('bg-red-500')) {
+                                    totalWon += betValue * 3; // triple win
+                                    betMoneyBack += betValue; // Return the bet amount
+                                } else {
+                                    totalLost += betValue; // Loss is the bet amount
+                                }
                             }
                         });
 
-                        this.balance += totalWon
+                        this.balance += totalWon + betMoneyBack;
 
                         let message = '';
-                        if (totalWon > 0) {
-                            message += `អ្នកឈ្នះ ${totalWon} រៀល​ 🤩🤩\n`;
-                        }
-                        if (totalLost > 0) {
-                            message += `អ្នកចាញ់ ${totalLost} រៀល 😑`;
+
+                        if (totalWon === totalLost) {
+                            message += `រូចដើមចាក់ត្រូវ​${totalWon}៛ តែមេស៊ីអស់ ${totalLost} ៛ 😤`;
+                        } else {
+                            if (totalWon > 0) {
+                                message += `អ្នកឈ្នះ ${totalWon} រៀល​ 🤩🤩\n`;
+                            }
+                            if (totalLost > 0) {
+                                message += `អ្នកចាញ់ ${totalLost} រៀល 😑`;
+                            }
                         }
 
                         this.popupMessage = message;
-                        this.image = 'image/happy.png'
-                        if (totalWon < totalLost) {
-                            this.image = 'image/sad.png'
-                        }
-
-
+                        this.image = totalWon >= totalLost ? 'image/happy.png' : 'image/sad.png';
                         this.showModal = true; // Show modal
-                        this.add_balance = false
+                        this.add_balance = false;
                     } else {
                         this.popupMessage = "សូមចុចប៉ូតុង ចាក់ម្ដងទៀត ដើម្បីចាក់បន្ត 👌👌";
-                        this.image = ''
+                        this.image = '';
                         this.showModal = true; // Show modal
                     }
                 },
-
                 closeModal() {
                     this.showModal = false; // Close modal
                 },
